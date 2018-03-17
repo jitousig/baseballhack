@@ -36,7 +36,9 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
                               mainPanel(
                                 tabsetPanel(
                                   tabPanel("Summary", plotlyOutput("coolplot")),
-                                  tabPanel("Fastballs", plotlyOutput("fastballs"))
+                                  tabPanel("Fastballs", plotlyOutput("fastballs")),
+                                  tabPanel("Breaking Balls", plotlyOutput("breakingballs")),
+                                  tabPanel("Changeups", plotlyOutput("changeups"))
                                 ))))
 
 
@@ -47,13 +49,27 @@ server <- function(input, output) {
   df_fastballs <- reactive({
     pitches %>% filter(pitchCategory == "Fastball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
+  df_breakingballs <- reactive({
+    pitches %>% filter(pitchCategory == "Breaking Ball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+  })
+  df_changeup <- reactive({
+    pitches %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+  })
   
   output$coolplot <- renderPlotly({
-    plot_ly(filtered(), type = "histogram", x = ~pitchCategory)
+    plot_ly(filtered(), type = "histogram", x = ~pitchCategory, histnorm = "probability") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
   })
   
   output$fastballs <- renderPlotly({
-    plot_ly(df_fastballs(), type = "histogram", x = ~is_ball)
+    plot_ly(df_fastballs(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
+  })
+  
+  output$breakingballs <- renderPlotly({
+    plot_ly(df_breakingballs(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
+  })
+  
+  output$changeups <- renderPlotly({
+    plot_ly(df_changeup(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
   })
   
   output$base <- renderPrint({ input$onbase })
