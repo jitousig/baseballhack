@@ -9,7 +9,7 @@ pitches<-pitches[!(pitches$outcomeDescription == 'Balk' | pitches$outcomeDescrip
 pitches<-pitches[!(pitches$pitchTypeDescription == 'Intentional Ball' | pitches$pitchTypeDescription == 'Knuckleball'),]
 
 #Adding column 'is_ball' with TRUE or FALSE entries
-pitches = mutate(pitches, is_ball = ifelse(outcomeDescription %in% c('Ball','Dirt Ball','Hit by pitch', 'Pitch Out'), "Ball","Strike")
+pitches = mutate(pitches, is_ball = ifelse(outcomeDescription %in% c('Ball','Dirt Ball','Hit by pitch', 'Pitch Out'), "Ball","Strike"))
 
 #Adding column 'pitchCategory'
 pitches = mutate(pitches, pitchCategory = ifelse(pitchTypeDescription %in% c('Fastball','Cutter','Sinker', 'Splitter'),'Fastball',ifelse(pitchTypeDescription %in% c('Changeup'),'Changeup','Breaking Ball')))
