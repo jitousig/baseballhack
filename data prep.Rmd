@@ -1,0 +1,88 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(bigrquery)
+library(data.table)
+library(dplyr)
+library(plotly)
+library(shiny)
+library(readr)
+
+data0 = read_csv("C:/Users/574041851/Downloads/data000000000000")
+data1 = read_csv("C:/Users/574041851/Downloads/data000000000001")
+
+
+```
+
+```{r}
+
+alldata<-rbind(data0,data1)
+
+filtered <- select(alldata,durationMinutes,             
+awayTeamName,                 
+homeTeamName,                 
+venueOutfieldDistances,        
+homeFinalRuns,     
+homeFinalHits,
+homeFinalErrors,              
+awayFinalRuns,                           
+homeFinalRunsForInning,       
+awayFinalRunsForInning,        
+inningNumber,                 
+inningHalf,                                 
+inningHalfEventSequenceNumber,                  
+atBatEventType,                                                       
+outcomeDescription,                    
+hitterLastName,                
+hitterFirstName,                              
+hitterBatHand,                
+pitcherFirstName,              
+pitcherLastName,              
+pitcherThrowHand,                               
+pitchTypeDescription,          
+pitchSpeed,                   
+pitchZone,                     
+pitcherPitchCount,            
+hitterPitchCount,                       
+hitType,
+startingBalls,                
+startingStrikes,               
+startingOuts,                 
+balls,                         
+strikes,                      
+outs,                         
+rob0_start,                   
+rob1_start,
+rob2_start,                   
+rob3_start,                                          
+is_wild_pitch,                
+is_passed_ball,                
+homeCurrentTotalRuns,         
+awayCurrentTotalRuns,          
+awayFielder1,                 
+lineupPosition,               
+lineupOrder 
+) %>%
+  filter(atBatEventType == 'PITCH')
+
+#Percentage of fastballs
+fastballs <- filter(filtered,pitchTypeDescription == 'Fastball')
+
+nrow(fastballs)/nrow(filtered)
+
+#Percentage of pitches over 100mph
+over100<- filter(filtered,pitchSpeed >=100)
+
+nrow(over100)/nrow(filtered)
+
+#Percentage of over 100mph pitches that were fastballs
+nrow(filter(over100,pitchTypeDescription == 'Fastball'))/nrow(over100)
+
+write.csv(filtered, "C:/Users/574041851/Documents/Personal/filtered.csv")
+saveRDS(filtered, file = "filtered.RDS")
+```
+
