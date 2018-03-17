@@ -37,7 +37,8 @@ homeFinalRunsForInning,
 awayFinalRunsForInning,        
 inningNumber,                 
 inningHalf,                                 
-inningHalfEventSequenceNumber,                  
+inningHalfEventSequenceNumber,
+atBatEventSequenceNumber,
 atBatEventType,                                                       
 outcomeDescription,                    
 hitterLastName,                
@@ -69,7 +70,11 @@ homeCurrentTotalRuns,
 awayCurrentTotalRuns,          
 awayFielder1,                 
 lineupPosition,               
-lineupOrder 
+lineupOrder,
+rob0_outcomeId,
+rob1_outcomeId,
+rob2_outcomeId,
+rob3_outcomeId
 ) %>%
   filter(atBatEventType == 'PITCH')
 
@@ -88,13 +93,6 @@ nrow(filter(over100,pitchTypeDescription == 'Fastball'))/nrow(over100)
 
 #write.csv(filtered, "C:/Users/574041851/Documents/Personal/filtered.csv")
 saveRDS(filtered, file = "filtered1.RDS")
-```
-```{r}
-namesdata
-```
-
-```{r}
-alldata %>% count(pitchTypeDescription)
 ```
 
 
