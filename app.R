@@ -3,6 +3,7 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 library(shinyWidgets)
+library(tidyr)
 
 df <- readRDS("pitches.rds")
 
@@ -44,20 +45,22 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
 
 server <- function(input, output) {
   filtered <- reactive({
-    df %>% filter(startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
-  })
+    df %>% filter(startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"), runner_on_first == ifelse(1 %in% input$onbase, TRUE, FALSE), runner_on_second == ifelse(2 %in% input$onbase, TRUE, FALSE), runner_on_third == ifelse(3 %in% input$onbase, TRUE, FALSE))
+    })
   df_fastballs <- reactive({
-    df %>% filter(pitchCategory == "Fastball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(pitchCategory == "Fastball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"), runner_on_first == ifelse(1 %in% input$onbase, TRUE, FALSE), runner_on_second == ifelse(2 %in% input$onbase, TRUE, FALSE), runner_on_third == ifelse(3 %in% input$onbase, TRUE, FALSE))
   })
   df_breakingballs <- reactive({
-    df %>% filter(pitchCategory == "Breaking Ball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(pitchCategory == "Breaking Ball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"), runner_on_first == ifelse(1 %in% input$onbase, TRUE, FALSE), runner_on_second == ifelse(2 %in% input$onbase, TRUE, FALSE), runner_on_third == ifelse(3 %in% input$onbase, TRUE, FALSE))
   })
   df_changeup <- reactive({
-    df %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"), runner_on_first == ifelse(1 %in% input$onbase, TRUE, FALSE), runner_on_second == ifelse(2 %in% input$onbase, TRUE, FALSE), runner_on_third == ifelse(3 %in% input$onbase, TRUE, FALSE))
   })
+  summary_summary <- reactive({df %>% count(pitchCategory, is_ball) %>% spread(is_ball,n)})
   
+
   output$coolplot <- renderPlotly({
-    plot_ly(filtered(), type = "histogram", x = ~pitchCategory, histnorm = "probability") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
+    plot_ly(summary_summary(), type = "bar", x = ~pitchCategory, y = ~Ball, name = "Ball") %>% add_trace(y = ~Strike, name = "Strike") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches"), barmode = 'stack')
   })
   
   output$fastballs <- renderPlotly({
