@@ -40,7 +40,7 @@ server <- function(input, output) {
   })
   
   output$coolplot <- renderPlotly({
-    plot_ly(filtered(), type = "histogram", x = ~pitchTypeDescription)
+    plot_ly(filtered(), type = "histogram", x = ~pitchCategory)
   })
   
   output$base <- renderPrint({ input$onbase })
