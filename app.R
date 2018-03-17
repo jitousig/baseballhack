@@ -11,13 +11,18 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
                                                          c("0" = 0,
                                                            "1" = 1,
                                                            "2" = 2,
-                                                           "3" = 3)
+                                                           "3" = 3), inline = TRUE
                                                          ),
                                             radioButtons("strikes", "Strikes:",
                                                          c("0" = 0,
                                                            "1" = 1,
-                                                           "2" = 2)
+                                                           "2" = 2), inline = TRUE
                                                          ),
+                                            radioButtons("outs", "Outs in Inning:",
+                                                         c("0" = 0,
+                                                           "1" = 1,
+                                                           "2" = 2), inline = TRUE
+                                            ),
                                             checkboxGroupButtons(
                                               "onbase", label = "Select runners on base:", 
                                               choices = c("First" = 1 , "Second" = 2, "Third" = 3), 
@@ -36,7 +41,7 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
 
 server <- function(input, output) {
   filtered <- reactive({
-    pitches %>% filter(balls == input$balls, strikes == input$strikes, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    pitches %>% filter(balls == input$balls, strikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   
   output$coolplot <- renderPlotly({
