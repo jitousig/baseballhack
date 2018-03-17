@@ -33,19 +33,27 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
                                             switchInput("batter_handedness", label = "Batter Handedness", onLabel = "Left", offLabel = "Right", value = FALSE),
                                             knobInput("run_difference", label = "Fielding team leading by:", min = -15, max = 15, value = 0)
                                             ),
-                              mainPanel(plotlyOutput("coolplot"), br(), br(), verbatimTextOutput("base")) 
-                
-                ))
-
+                              mainPanel(
+                                tabsetPanel(
+                                  tabPanel("Summary", plotlyOutput("coolplot")),
+                                  tabPanel("Fastballs", plotlyOutput("fastballs"))
+                                ))))
 
 
 server <- function(input, output) {
   filtered <- reactive({
-    pitches %>% filter(balls == input$balls, strikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    pitches %>% filter(startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+  })
+  df_fastballs <- reactive({
+    pitches %>% filter(pitchCategory == "Fastball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   
   output$coolplot <- renderPlotly({
     plot_ly(filtered(), type = "histogram", x = ~pitchCategory)
+  })
+  
+  output$fastballs <- renderPlotly({
+    plot_ly(df_fastballs(), type = "histogram", x = ~is_ball)
   })
   
   output$base <- renderPrint({ input$onbase })
