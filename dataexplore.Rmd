@@ -18,7 +18,8 @@ pitches <- readRDS("filtered1.RDS")
 pitches
 ```
 ```{r}
-game1 = filter(pitcher, game1)
+game1 = filter(data0, gameId == "dc42dfe7-d6dd-4831-a9ad-c1dcfc8f62af") %>%
+  arrange(inningNumber, desc(inningHalf), inningHalfEventSequenceNumber, hitterPitchCount)
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.

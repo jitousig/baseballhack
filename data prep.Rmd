@@ -12,8 +12,8 @@ library(plotly)
 library(shiny)
 library(readr)
 
-data0 = read_csv("C:/Users/574041851/Downloads/data000000000000")
-data1 = read_csv("C:/Users/574041851/Downloads/data000000000001")
+data0 = read_csv("C:/Users/985076660/Downloads/data000000000000")
+data1 = read_csv("C:/Users/985076660/Downloads/data000000000001")
 
 
 ```
@@ -22,7 +22,10 @@ data1 = read_csv("C:/Users/574041851/Downloads/data000000000001")
 
 alldata<-rbind(data0,data1)
 
-filtered <- select(alldata,durationMinutes,             
+filtered <- select(
+                   alldata,
+                   gameId,
+                   durationMinutes,             
 awayTeamName,                 
 homeTeamName,                 
 venueOutfieldDistances,        
@@ -60,7 +63,8 @@ rob1_start,
 rob2_start,                   
 rob3_start,                                          
 is_wild_pitch,                
-is_passed_ball,                
+is_passed_ball,
+is_ab_over,
 homeCurrentTotalRuns,         
 awayCurrentTotalRuns,          
 awayFielder1,                 
@@ -82,7 +86,15 @@ nrow(over100)/nrow(filtered)
 #Percentage of over 100mph pitches that were fastballs
 nrow(filter(over100,pitchTypeDescription == 'Fastball'))/nrow(over100)
 
-write.csv(filtered, "C:/Users/574041851/Documents/Personal/filtered.csv")
-saveRDS(filtered, file = "filtered.RDS")
+#write.csv(filtered, "C:/Users/574041851/Documents/Personal/filtered.csv")
+saveRDS(filtered, file = "filtered1.RDS")
 ```
+```{r}
+namesdata
+```
+
+```{r}
+alldata %>% count(pitchTypeDescription)
+```
+
 
