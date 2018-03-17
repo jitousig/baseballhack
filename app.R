@@ -44,16 +44,16 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
 
 server <- function(input, output) {
   filtered <- reactive({
-    pitches %>% filter(startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   df_fastballs <- reactive({
-    pitches %>% filter(pitchCategory == "Fastball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(pitchCategory == "Fastball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   df_breakingballs <- reactive({
-    pitches %>% filter(pitchCategory == "Breaking Ball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(pitchCategory == "Breaking Ball", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   df_changeup <- reactive({
-    pitches %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
+    df %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   
   output$coolplot <- renderPlotly({
@@ -71,8 +71,6 @@ server <- function(input, output) {
   output$changeups <- renderPlotly({
     plot_ly(df_changeup(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
   })
-  
-  output$base <- renderPrint({ input$onbase })
 }
 
 
