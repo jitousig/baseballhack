@@ -11,11 +11,14 @@ library(dplyr)
 ```
 
 ```{r}
-pitches <- readRDS("filtered.RDS")
+pitches <- readRDS("filtered1.RDS")
 ```
 
 ```{r}
 pitches
+```
+```{r}
+game1 = filter(pitcher, game1)
 ```
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
