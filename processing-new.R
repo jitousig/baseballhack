@@ -1,5 +1,3 @@
-rm(list=ls(all=T))
-
 pitches<-readRDS("filtered1.RDS")
 
 #Drop certain Pitch outcomes
