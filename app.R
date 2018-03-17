@@ -56,11 +56,12 @@ server <- function(input, output) {
   df_changeup <- reactive({
     df %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"), runner_on_first == ifelse(1 %in% input$onbase, TRUE, FALSE), runner_on_second == ifelse(2 %in% input$onbase, TRUE, FALSE), runner_on_third == ifelse(3 %in% input$onbase, TRUE, FALSE))
   })
-  summary_summary <- reactive({df %>% count(pitchCategory, is_ball) %>% spread(is_ball,n)})
+  summary_summary <- reactive({df %>% count(pitchCategory, is_ball) %>% spread(is_ball,n) %>% mutate(s = Ball + Strike) %>% mutate(totalsum = sum(s), prop_ball = Ball/totalsum, prop_strike = Strike/totalsum)})
   
 
+
   output$coolplot <- renderPlotly({
-    plot_ly(summary_summary(), type = "bar", x = ~pitchCategory, y = ~Ball, name = "Ball") %>% add_trace(y = ~Strike, name = "Strike") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches"), barmode = 'stack')
+    plot_ly(summary_summary(), type = "bar", x = ~pitchCategory, y = ~prop_ball, name = "Ball") %>% add_trace(y = ~prop_strike, name = "Strike") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0,1)), barmode = 'stack')
   })
   
   output$fastballs <- renderPlotly({
