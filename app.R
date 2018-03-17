@@ -74,13 +74,13 @@ server <- function(input, output) {
       mutate(Probability = n/totalrows)})
   
   expected_runs_fastball  <- reactive({df_fastball_joel() %>% mutate(expectedruns = total_runs_to_come*Probability) %>%
-    summarize(mean(expectedruns)) %>% as.numeric()})
+    summarize(sum(expectedruns)) %>% as.numeric()})
   
   expected_runs_breaking  <- reactive({df_breaking_joel() %>% mutate(expectedruns = total_runs_to_come*Probability) %>%
-      summarize(mean(expectedruns)) %>% as.numeric()})
+      summarize(sum(expectedruns)) %>% as.numeric()})
   
   expected_runs_changeup  <- reactive({df_changeup_joel() %>% mutate(expectedruns = total_runs_to_come*Probability) %>%
-      summarize(mean(expectedruns)) %>% as.numeric()})
+      summarize(sum(expectedruns)) %>% as.numeric()})
   
   output$coolplot <- renderPlotly({
     plot_ly(summary_summary(), type = "bar", x = ~pitchCategory, y = ~prop_ball, name = "Ball") %>% add_trace(y = ~prop_strike, name = "Strike") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0,1)), barmode = 'stack')
