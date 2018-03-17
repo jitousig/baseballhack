@@ -1,3 +1,5 @@
+rm(list=ls(all=T))
+
 pitches<-readRDS("filtered1.RDS")
 
 #Drop certain Pitch outcomes
@@ -6,10 +8,17 @@ pitches<-pitches[!(pitches$outcomeDescription == 'Balk' | pitches$outcomeDescrip
 #Drop certain Pitch Types
 pitches<-pitches[!(pitches$pitchTypeDescription == 'Intentional Ball' | pitches$pitchTypeDescription == 'Knuckleball'),]
 
-#Adding column 'ball' with TRUE or FALSE entries
+#Adding column 'is_ball' with TRUE or FALSE entries
 pitches = mutate(pitches, is_ball = outcomeDescription %in% c('Ball','Dirt Ball','Hit by pitch', 'Pitch Out'))
 
 #Adding column 'pitchCategory'
 pitches = mutate(pitches, pitchCategory = ifelse(pitchTypeDescription %in% c('Fastball','Cutter','Sinker', 'Splitter'),'Fastball',ifelse(pitchTypeDescription %in% c('Changeup'),'Changeup','Breaking Ball')))
 
-saveRDS(pitches, "pitches.rds")
+
+df_outcome <- pitches %>% filter(pitches$is_ab_over == 1)
+df_outcome$atBatOutcome <- ifelse(df_outcome$outs - df_outcome$startingOuts == 1, "Out", "Not out")
+df_outcome <- df_outcome %>% select(gameId, inningNumber, inningHalf, inningHalfEventSequenceNumber, atBatOutcome)
+
+pitches2 <- left_join(pitches, df_outcome, by = c('gameId','inningNumber','inningHalf','inningHalfEventSequenceNumber'))
+
+saveRDS(pitches2, "pitches.rds")
