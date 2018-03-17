@@ -18,7 +18,7 @@ pitches <- readRDS("filtered1.RDS")
 pitches
 ```
 ```{r}
-game1 = filter(data0, gameId == "dc42dfe7-d6dd-4831-a9ad-c1dcfc8f62af") %>%
+game1 = filter(pitches, gameId == "dc42dfe7-d6dd-4831-a9ad-c1dcfc8f62af") %>%
   arrange(inningNumber, desc(inningHalf), inningHalfEventSequenceNumber, hitterPitchCount)
 ```
 
