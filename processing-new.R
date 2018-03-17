@@ -9,7 +9,7 @@ pitches<-pitches[!(pitches$pitchTypeDescription == 'Intentional Ball' | pitches$
 #Adding column 'ball' with TRUE or FALSE entries
 pitches = mutate(pitches, is_ball = outcomeDescription %in% c('Ball','Dirt Ball','Hit by pitch', 'Pitch Out'))
 
-#Adding column 'fastball' with TRUE or FALSE entries
+#Adding column 'pitchCategory'
 pitches = mutate(pitches, pitchCategory = ifelse(pitchTypeDescription %in% c('Fastball','Cutter','Sinker', 'Splitter'),'Fastball',ifelse(pitchTypeDescription %in% c('Changeup'),'Changeup','Breaking Ball')))
 
 saveRDS(pitches, "pitches.rds")
