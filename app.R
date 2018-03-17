@@ -4,7 +4,7 @@ library(ggplot2)
 library(plotly)
 library(shinyWidgets)
 
-df <- readRDS("filtered.RDS")
+df <- readRDS("pitches.rds")
 
 ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
                 sidebarLayout(sidebarPanel( radioButtons("balls", "Balls:",
@@ -25,8 +25,10 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
                                               checkIcon = list(yes = icon("ok", lib = "glyphicon"), no = icon("remove", lib = "glyphicon"))
                                               ),
                                             switchInput("pitcher_handedness", label = "Pitcher Handedness", onLabel = "Left", offLabel = "Right", value = FALSE),
-                                            switchInput("batter_handedness", label = "Batter Handedness", onLabel = "Left", offLabel = "Right", value = FALSE)),
-                              mainPanel(plotlyOutput("coolplot")) 
+                                            switchInput("batter_handedness", label = "Batter Handedness", onLabel = "Left", offLabel = "Right", value = FALSE),
+                                            knobInput("run_difference", label = "Fielding team leading by:", min = -15, max = 15, value = 0)
+                                            ),
+                              mainPanel(plotlyOutput("coolplot"), br(), br(), verbatimTextOutput("base")) 
                 
                 ))
 
@@ -34,12 +36,14 @@ ui <- fluidPage(titlePanel("2016 Pitch Explorer"),
 
 server <- function(input, output) {
   filtered <- reactive({
-    df %>% filter(balls == input$balls, strikes == input$strikes)
+    pitches %>% filter(balls == input$balls, strikes == input$strikes, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"))
   })
   
   output$coolplot <- renderPlotly({
     plot_ly(filtered(), type = "histogram", x = ~pitchTypeDescription)
   })
+  
+  output$base <- renderPrint({ input$onbase })
 }
 
 
