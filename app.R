@@ -56,24 +56,28 @@ server <- function(input, output) {
   df_changeup <- reactive({
     df %>% filter(pitchCategory == "Changeup", startingBalls == input$balls, startingStrikes == input$strikes, startingOuts == input$outs, pitcherThrowHand == ifelse(input$pitcher_handedness, "L", "R"), hitterBatHand == ifelse(input$batter_handedness, "L", "R"), runner_on_first == ifelse(1 %in% input$onbase, TRUE, FALSE), runner_on_second == ifelse(2 %in% input$onbase, TRUE, FALSE), runner_on_third == ifelse(3 %in% input$onbase, TRUE, FALSE))
   })
-  summary_summary <- reactive({df %>% count(pitchCategory, is_ball) %>% spread(is_ball,n) %>% mutate(s = Ball + Strike) %>% mutate(totalsum = sum(s), prop_ball = Ball/totalsum, prop_strike = Strike/totalsum)})
+  summary_summary <- reactive({filtered() %>% count(pitchCategory, is_ball) %>% spread(is_ball,n) %>% mutate(s = Ball + Strike) %>% mutate(totalsum = sum(s), prop_ball = Ball/totalsum, prop_strike = Strike/totalsum)})
   
+  summary_fastballs <- reactive({df_fastballs() %>% count(is_ball, atBatOutcome) %>% spread(atBatOutcome,n) %>% mutate(s = Out + `Not out`) %>% mutate(totalsum = sum(s), prop_out = Out/totalsum, prop_not_out = `Not out`/totalsum)})
 
-
+  summary_breakingballs <- reactive({df_breakingballs() %>% count(is_ball, atBatOutcome) %>% spread(atBatOutcome,n) %>% mutate(s = Out + `Not out`) %>% mutate(totalsum = sum(s), prop_out = Out/totalsum, prop_not_out = `Not out`/totalsum)})
+  
+  summary_changeup <- reactive({df_changeup() %>% count(is_ball, atBatOutcome) %>% spread(atBatOutcome,n) %>% mutate(s = Out + `Not out`) %>% mutate(totalsum = sum(s), prop_out = Out/totalsum, prop_not_out = `Not out`/totalsum)})
+  
   output$coolplot <- renderPlotly({
     plot_ly(summary_summary(), type = "bar", x = ~pitchCategory, y = ~prop_ball, name = "Ball") %>% add_trace(y = ~prop_strike, name = "Strike") %>% layout(xaxis = list(title = "Type of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0,1)), barmode = 'stack')
   })
   
   output$fastballs <- renderPlotly({
-    plot_ly(df_fastballs(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
+    plot_ly(summary_fastballs(), type = "bar", x = ~is_ball, y = ~prop_out, name = "Out") %>% add_trace(y = ~prop_not_out, name = "Not Out") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)), barmode = 'stack')
   })
   
   output$breakingballs <- renderPlotly({
-    plot_ly(df_breakingballs(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
+    plot_ly(summary_breakingballs(), type = "bar", x = ~is_ball, y = ~prop_out, name = "Out") %>% add_trace(y = ~prop_not_out, name = "Not Out") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)), barmode = 'stack')
   })
   
   output$changeups <- renderPlotly({
-    plot_ly(df_changeup(), type = "histogram", x = ~is_ball, histnorm = "probability") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)))
+    plot_ly(summary_changeup(), type = "bar", x = ~is_ball, y = ~prop_out, name = "Out") %>% add_trace(y = ~prop_not_out, name = "Not Out") %>% layout(xaxis = list(title = "Outcome of Pitch"), yaxis = list(title = "Proportion of Total Pitches", range = c(0, 1)), barmode = 'stack')
   })
 }
 
